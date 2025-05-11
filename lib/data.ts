@@ -20,15 +20,13 @@ export interface Producto {
   cantidad: number
 }
 
-// Detalle de pedido
+// Detalle de Pedido
 export interface DetallePedido {
-  idDetalle?: string
   idPedido: string
-  idProducto: string
+  idProd: string
   cantidad: number
   precio: number
   totalDeta: number
-  descripcion?: string
 }
 
 // Pedido
@@ -212,17 +210,18 @@ export async function getPedido(id: string): Promise<Pedido | null> {
 
 export async function getDetallesPedido(idPedido: string): Promise<DetallePedido[]> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/api/detalle-pedidos?idPedido=${idPedido}`)
+    const response = await fetch(`${getApiBaseUrl()}/api/detalles/${idPedido}`)
     if (!response.ok) {
       throw new Error(`Error al cargar los detalles del pedido: ${response.status}`)
     }
     const data = await response.json()
     return data as DetallePedido[]
   } catch (error) {
-    console.error(`Error fetching detalles for pedido ${idPedido}:`, error)
+    console.error(`Error fetching detalles del pedido ${idPedido}:`, error)
     return []
   }
 }
+
 
 export async function addPedido(
   pedido: Omit<Pedido, "idPedido">,

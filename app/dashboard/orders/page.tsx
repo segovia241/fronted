@@ -6,15 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Plus, Search, FileDown, RefreshCw, ClipboardList, Calendar, User2 } from "lucide-react"
+import { Plus, Search, ClipboardList, Calendar, User2 } from "lucide-react"
 import { type Pedido, getPedidos } from "@/lib/data"
-import { type Cliente } from "@/lib/data"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function OrdersPage() {
-
-  
   const router = useRouter()
   const [orders, setOrders] = useState<Pedido[]>([])
   const [loading, setLoading] = useState(true)
@@ -138,7 +135,6 @@ export default function OrdersPage() {
                 />
               </div>
               <div className="flex gap-2">
-                
                 <Button onClick={() => router.push("/dashboard/orders/new")}>
                   <Plus className="mr-2 h-4 w-4" /> Nuevo Pedido
                 </Button>
@@ -180,34 +176,33 @@ export default function OrdersPage() {
                       paginatedOrders.map((order) => (
                         <TableRow
                           key={order.idPedido}
-                          className="hover:bg-slate-50"
-                          /*onClick={() => router.push(`/dashboard/orders/${order.idPedido}`)}*/
+                          className="hover:bg-slate-50 cursor-pointer"
+                          onClick={() => router.push(`/dashboard/orders/${order.idPedido}`)}
                         >
                           <TableCell className="font-medium">{order.idPedido}</TableCell>
-<TableCell>
-  <div className="flex items-center">
-    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-      <User2 className="h-4 w-4 text-primary" />
-    </div>
-    <div>
-      {order.cliente
-        ? `${order.cliente.apellidos || ""}, ${order.cliente.nombres || ""}`
-        : `Cliente ID: ${order.cliente?.idCliente || "N/A"}`}
-    </div>
-  </div>
-</TableCell>
-<TableCell>
-  <div className="flex items-center">
-    <Calendar className="h-4 w-4 text-slate-400 mr-2" />
-    {formatDate(order.fecha)}
-  </div>
-</TableCell>
-<TableCell>${(order.subTotal ?? 0).toFixed(2)}</TableCell>
-<TableCell className="font-medium">${(order.totalVenta ?? 0).toFixed(2)}</TableCell>
-<TableCell>
-  <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Completado</Badge>
-</TableCell>
-
+                          <TableCell>
+                            <div className="flex items-center">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+                                <User2 className="h-4 w-4 text-primary" />
+                              </div>
+                              <div>
+                                {order.cliente
+                                  ? `${order.cliente.apellidos || ""}, ${order.cliente.nombres || ""}`
+                                  : `Cliente ID: ${order.cliente?.idCliente || "N/A"}`}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 text-slate-400 mr-2" />
+                              {formatDate(order.fecha)}
+                            </div>
+                          </TableCell>
+                          <TableCell>${(order.subTotal ?? 0).toFixed(2)}</TableCell>
+                          <TableCell className="font-medium">${(order.totalVenta ?? 0).toFixed(2)}</TableCell>
+                          <TableCell>
+                            <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Completado</Badge>
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
