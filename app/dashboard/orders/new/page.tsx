@@ -244,22 +244,34 @@ export default function NewOrderPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="client" className="text-sm font-medium">
-                      Cliente *
+                      Cliente
                     </Label>
                     <div className="relative">
                       <User2 className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                      <Select value={selectedClient} onValueChange={setSelectedClient}>
-                        <SelectTrigger id="client" className="pl-10">
-                          <SelectValue placeholder="Seleccione un cliente" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.idCliente} value={client.idCliente.toString()}>
-                              {`${client.apellidos}, ${client.nombres}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+
+<Select value={selectedClient} onValueChange={setSelectedClient}>
+  <SelectTrigger id="client" className="pl-10">
+    <SelectValue placeholder="Seleccione un cliente" />
+  </SelectTrigger>
+  <SelectContent>
+    {clients.map((client, index) => {
+      if (
+        !client.idCliente ||
+        client.idCliente === ''
+      ) {
+      }
+      return (
+        <SelectItem
+          key={client.idCliente || `invalid-${index}`}
+          value={client.idCliente?.toString() || ''}
+        >
+          {`${client.apellidos}, ${client.nombres}`}
+        </SelectItem>
+      );
+    })}
+  </SelectContent>
+</Select>
+
                     </div>
                   </div>
 
@@ -298,25 +310,36 @@ export default function NewOrderPage() {
                     </Label>
                     <div className="relative">
                       <Package className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                      <Select
-                        value={newProduct.idProducto}
-                        onValueChange={(value) => setNewProduct({ ...newProduct, idProducto: value })}
-                      >
-                        <SelectTrigger id="product" className="pl-10">
-                          <SelectValue placeholder="Seleccione un producto" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {products.map((product) => (
-                            <SelectItem
-                              key={product.idProducto}
-                              value={product.idProducto.toString()}
-                              disabled={product.cantidad <= 0}
-                            >
-                              {product.descripcion} - ${product.precio.toFixed(2)} ({product.cantidad} disponibles)
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+
+<Select
+  value={newProduct.idProducto}
+  onValueChange={(value) => {
+    console.log("Producto seleccionado:", value);
+    setNewProduct({ ...newProduct, idProducto: value });
+  }}
+>
+  <SelectTrigger id="product" className="pl-10">
+    <SelectValue placeholder="Seleccione un producto" />
+  </SelectTrigger>
+  <SelectContent>
+    {products.map((product, index) => {
+      if (!product.idProducto || product.idProducto === '') {
+        console.warn(`Producto[${index}] con idProducto inválido:`, product);
+      }
+
+      return (
+        <SelectItem
+          key={product.idProducto || `invalid-${index}`}
+          value={product.idProducto?.toString() || ''}
+          disabled={product.cantidad <= 0}
+        >
+          {product.descripcion} - ${product.precio.toFixed(2)} ({product.cantidad} disponibles)
+        </SelectItem>
+      );
+    })}
+  </SelectContent>
+</Select>
+
                     </div>
                   </div>
 

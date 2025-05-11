@@ -235,7 +235,7 @@ export default function DocsPage() {
     (section) =>
       section.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       section.content.props.children.some(
-        (child) =>
+        (child: { props: { children: string } }) =>
           typeof child === "object" &&
           child.props &&
           child.props.children &&

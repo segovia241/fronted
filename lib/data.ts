@@ -64,10 +64,16 @@ export async function getClientes(): Promise<Cliente[]> {
     if (!response.ok) {
       throw new Error(`Error al cargar los clientes: ${response.status}`)
     }
+
     const data = await response.json()
-    return data as Cliente[]
+
+    const clientesValidos = (data as Cliente[]).filter(
+      (c) => c.idCliente !== undefined && c.idCliente !== null && c.idCliente !== ''
+    )
+
+
+    return clientesValidos
   } catch (error) {
-    console.error("Error fetching clientes:", error)
     return []
   }
 }
@@ -115,13 +121,29 @@ export async function getProductos(): Promise<Producto[]> {
     if (!response.ok) {
       throw new Error(`Error al cargar los productos: ${response.status}`)
     }
-    const data = await response.json()
-    return data as Producto[]
+
+    const data = await response.json();
+    console.log("Productos recibidos desde la API:", data);
+
+    const productosValidos = (data as Producto[]).filter(
+      (p) => p.idProducto !== undefined && p.idProducto !== null && p.idProducto !== ''
+    );
+
+    const productosInvalidos = (data as Producto[]).filter(
+      (p) => !p.idProducto || p.idProducto === ''
+    );
+
+    if (productosInvalidos.length > 0) {
+      console.warn("Productos con idProducto inválido:", productosInvalidos);
+    }
+
+    return productosValidos;
   } catch (error) {
-    console.error("Error fetching productos:", error)
-    return []
+    console.error("Error fetching productos:", error);
+    return [];
   }
 }
+
 
 export async function getProducto(id: string): Promise<Producto | null> {
   try {
