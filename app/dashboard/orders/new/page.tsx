@@ -249,29 +249,25 @@ export default function NewOrderPage() {
                     <div className="relative">
                       <User2 className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
 
-<Select value={selectedClient} onValueChange={setSelectedClient}>
-  <SelectTrigger id="client" className="pl-10">
-    <SelectValue placeholder="Seleccione un cliente" />
-  </SelectTrigger>
-  <SelectContent>
-    {clients.map((client, index) => {
-      if (
-        !client.idCliente ||
-        client.idCliente === ''
-      ) {
-      }
-      return (
-        <SelectItem
-          key={client.idCliente || `invalid-${index}`}
-          value={client.idCliente?.toString() || ''}
-        >
-          {`${client.apellidos}, ${client.nombres}`}
-        </SelectItem>
-      );
-    })}
-  </SelectContent>
-</Select>
-
+                      <Select value={selectedClient} onValueChange={setSelectedClient}>
+                        <SelectTrigger id="client" className="pl-10">
+                          <SelectValue placeholder="Seleccione un cliente" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client, index) => {
+                            if (!client.idCliente || client.idCliente === "") {
+                            }
+                            return (
+                              <SelectItem
+                                key={client.idCliente || `invalid-${index}`}
+                                value={client.idCliente?.toString() || ""}
+                              >
+                                {`${client.apellidos}, ${client.nombres}`}
+                              </SelectItem>
+                            )
+                          })}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
@@ -311,35 +307,34 @@ export default function NewOrderPage() {
                     <div className="relative">
                       <Package className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
 
-<Select
-  value={newProduct.idProducto}
-  onValueChange={(value) => {
-    console.log("Producto seleccionado:", value);
-    setNewProduct({ ...newProduct, idProducto: value });
-  }}
->
-  <SelectTrigger id="product" className="pl-10">
-    <SelectValue placeholder="Seleccione un producto" />
-  </SelectTrigger>
-  <SelectContent>
-    {products.map((product, index) => {
-      if (!product.idProducto || product.idProducto === '') {
-        console.warn(`Producto[${index}] con idProducto inválido:`, product);
-      }
+                      <Select
+                        value={newProduct.idProducto}
+                        onValueChange={(value) => {
+                          console.log("Producto seleccionado:", value)
+                          setNewProduct({ ...newProduct, idProducto: value })
+                        }}
+                      >
+                        <SelectTrigger id="product" className="pl-10">
+                          <SelectValue placeholder="Seleccione un producto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {products.map((product, index) => {
+                            if (!product.idProducto || product.idProducto === "") {
+                              console.warn(`Producto[${index}] con idProducto inválido:`, product)
+                            }
 
-      return (
-        <SelectItem
-          key={product.idProducto || `invalid-${index}`}
-          value={product.idProducto?.toString() || ''}
-          disabled={product.cantidad <= 0}
-        >
-          {product.descripcion} - ${product.precio.toFixed(2)} ({product.cantidad} disponibles)
-        </SelectItem>
-      );
-    })}
-  </SelectContent>
-</Select>
-
+                            return (
+                              <SelectItem
+                                key={product.idProducto || `invalid-${index}`}
+                                value={product.idProducto?.toString() || ""}
+                                disabled={product.cantidad <= 0}
+                              >
+                                {product.descripcion} - ${product.precio.toFixed(2)} ({product.cantidad} disponibles)
+                              </SelectItem>
+                            )
+                          })}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
@@ -358,7 +353,12 @@ export default function NewOrderPage() {
                   </div>
 
                   <div className="md:col-span-3">
-                    <Button type="button" onClick={handleAddProduct} className="w-full" disabled={!newProduct.idProducto}>
+                    <Button
+                      type="button"
+                      onClick={handleAddProduct}
+                      className="w-full"
+                      disabled={!newProduct.idProducto}
+                    >
                       <Plus className="mr-2 h-4 w-4" />
                       Agregar
                     </Button>

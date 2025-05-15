@@ -1,324 +1,475 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { FileText, Users, Package, ClipboardList, Home, Search, Info, BookOpen, Lightbulb } from "lucide-react"
+import { FileText, Search, Code, Database, Users, ShoppingCart, Package, Settings } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionItem } from "@/components/ui/accordion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "@/components/ui/use-toast"
 
 export default function DocsPage() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
 
-  const sections = [
+  const endpoints = [
     {
-      id: "intro",
-      title: "Introducción",
-      icon: Info,
-      content: (
-        <div className="space-y-4">
-          <p>
-            Bienvenido a la documentación del Sistema de Administración. Esta guía te ayudará a entender cómo utilizar
-            todas las funcionalidades del sistema para gestionar clientes, productos y pedidos de manera eficiente.
-          </p>
-          <p>
-            El sistema está diseñado para ser intuitivo y fácil de usar, con una interfaz moderna y responsive que
-            funciona en dispositivos móviles y de escritorio.
-          </p>
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertTitle>Nota importante</AlertTitle>
-            <AlertDescription>
-              Para acceder al sistema, utiliza las credenciales proporcionadas por el administrador. Las credenciales
-              predeterminadas son: Usuario: <strong>admin</strong>, Contraseña: <strong>admin</strong>
-            </AlertDescription>
-          </Alert>
-        </div>
-      ),
+      method: "GET",
+      path: "/api/clientes",
+      description: "Obtiene todos los clientes",
+      category: "clientes",
+      response: `[
+  {
+    "id": 1,
+    "nombre": "Cliente Ejemplo",
+    "email": "cliente@ejemplo.com",
+    "telefono": "123456789",
+    "direccion": "Calle Ejemplo 123",
+    "tipo": "empresa"
+  },
+  ...
+]`,
     },
     {
-      id: "dashboard",
-      title: "Dashboard",
-      icon: Home,
-      content: (
-        <div className="space-y-4">
-          <p>
-            El Dashboard es la página principal del sistema y proporciona una visión general de la información más
-            importante:
-          </p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Estadísticas clave: número de clientes, productos, pedidos y ventas totales.</li>
-            <li>Pedidos recientes: los últimos pedidos realizados en el sistema.</li>
-            <li>Acciones rápidas: accesos directos a las funciones más utilizadas.</li>
-            <li>Resumen del sistema: información general sobre las funcionalidades disponibles.</li>
-          </ul>
-          <p>
-            Desde el Dashboard puedes navegar a cualquier sección del sistema utilizando el menú lateral o los accesos
-            rápidos.
-          </p>
-        </div>
-      ),
+      method: "GET",
+      path: "/api/clientes/:id",
+      description: "Obtiene un cliente por ID",
+      category: "clientes",
+      response: `{
+  "id": 1,
+  "nombre": "Cliente Ejemplo",
+  "email": "cliente@ejemplo.com",
+  "telefono": "123456789",
+  "direccion": "Calle Ejemplo 123",
+  "tipo": "empresa"
+}`,
     },
     {
-      id: "clients",
-      title: "Gestión de Clientes",
-      icon: Users,
-      content: (
-        <div className="space-y-4">
-          <p>La sección de Clientes te permite gestionar toda la información relacionada con tus clientes:</p>
-          <h4 className="text-lg font-medium">Listar Clientes</h4>
-          <p>En esta vista puedes ver todos los clientes registrados en el sistema. Puedes:</p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Buscar clientes por nombre, apellido o DNI.</li>
-            <li>Ver la información detallada de cada cliente.</li>
-            <li>Navegar entre páginas si tienes muchos clientes.</li>
-            <li>Cambiar entre vista de lista y vista de tarjetas.</li>
-          </ul>
-
-          <h4 className="text-lg font-medium">Nuevo Cliente</h4>
-          <p>
-            Para añadir un nuevo cliente, haz clic en el botón "Nuevo Cliente" y completa el formulario con la siguiente
-            información:
-          </p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>
-              <strong>Apellidos*:</strong> Apellidos del cliente (obligatorio).
-            </li>
-            <li>
-              <strong>Nombres*:</strong> Nombres del cliente (obligatorio).
-            </li>
-            <li>
-              <strong>Dirección:</strong> Dirección completa del cliente.
-            </li>
-            <li>
-              <strong>DNI*:</strong> Documento de identidad del cliente (obligatorio).
-            </li>
-            <li>
-              <strong>Teléfono:</strong> Número de teléfono fijo.
-            </li>
-            <li>
-              <strong>Móvil:</strong> Número de teléfono móvil.
-            </li>
-          </ul>
-          <p>
-            Una vez completado el formulario, haz clic en "Guardar cliente" para registrar al cliente en el sistema.
-          </p>
-        </div>
-      ),
+      method: "POST",
+      path: "/api/clientes",
+      description: "Crea un nuevo cliente",
+      category: "clientes",
+      request: `{
+  "nombre": "Nuevo Cliente",
+  "email": "nuevo@cliente.com",
+  "telefono": "987654321",
+  "direccion": "Calle Nueva 456",
+  "tipo": "individual"
+}`,
+      response: `{
+  "id": 2,
+  "nombre": "Nuevo Cliente",
+  "email": "nuevo@cliente.com",
+  "telefono": "987654321",
+  "direccion": "Calle Nueva 456",
+  "tipo": "individual"
+}`,
     },
     {
-      id: "products",
-      title: "Gestión de Productos",
-      icon: Package,
-      content: (
-        <div className="space-y-4">
-          <p>La sección de Productos te permite gestionar tu inventario de productos:</p>
-          <h4 className="text-lg font-medium">Listar Productos</h4>
-          <p>En esta vista puedes ver todos los productos registrados en el sistema. Puedes:</p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Buscar productos por descripción.</li>
-            <li>Ver información detallada de cada producto: descripción, costo, precio, cantidad en stock y estado.</li>
-            <li>Identificar rápidamente productos con stock bajo gracias a los indicadores visuales.</li>
-            <li>Ver estadísticas generales como el valor total del inventario.</li>
-          </ul>
-
-          <h4 className="text-lg font-medium">Nuevo Producto</h4>
-          <p>
-            Para añadir un nuevo producto, haz clic en el botón "Nuevo Producto" y completa el formulario con la
-            siguiente información:
-          </p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>
-              <strong>Descripción*:</strong> Nombre o descripción del producto (obligatorio).
-            </li>
-            <li>
-              <strong>Costo*:</strong> Costo de adquisición del producto (obligatorio).
-            </li>
-            <li>
-              <strong>Precio de Venta*:</strong> Precio al que se venderá el producto (obligatorio).
-            </li>
-            <li>
-              <strong>Cantidad en Stock*:</strong> Número de unidades disponibles (obligatorio).
-            </li>
-          </ul>
-          <p>
-            El sistema calculará automáticamente el margen de ganancia y otros valores relevantes. Una vez completado el
-            formulario, haz clic en "Guardar producto" para registrarlo en el sistema.
-          </p>
-        </div>
-      ),
+      method: "PUT",
+      path: "/api/clientes/:id",
+      description: "Actualiza un cliente existente",
+      category: "clientes",
+      request: `{
+  "nombre": "Cliente Actualizado",
+  "email": "actualizado@cliente.com",
+  "telefono": "555555555",
+  "direccion": "Calle Actualizada 789",
+  "tipo": "empresa"
+}`,
+      response: `{
+  "id": 1,
+  "nombre": "Cliente Actualizado",
+  "email": "actualizado@cliente.com",
+  "telefono": "555555555",
+  "direccion": "Calle Actualizada 789",
+  "tipo": "empresa"
+}`,
     },
     {
-      id: "orders",
-      title: "Gestión de Pedidos",
-      icon: ClipboardList,
-      content: (
-        <div className="space-y-4">
-          <p>La sección de Pedidos te permite gestionar los pedidos de tus clientes:</p>
-          <h4 className="text-lg font-medium">Listar Pedidos</h4>
-          <p>En esta vista puedes ver todos los pedidos registrados en el sistema. Puedes:</p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Buscar pedidos por cliente o número de pedido.</li>
-            <li>Ver información detallada de cada pedido: cliente, fecha, subtotal y total.</li>
-            <li>Ver estadísticas generales como ventas totales y valor promedio de pedidos.</li>
-          </ul>
-
-          <h4 className="text-lg font-medium">Nuevo Pedido</h4>
-          <p>Para crear un nuevo pedido, haz clic en el botón "Nuevo Pedido" y sigue estos pasos:</p>
-          <ol className="list-decimal pl-6 space-y-2">
-            <li>Selecciona un cliente de la lista desplegable.</li>
-            <li>Verifica o modifica la fecha del pedido.</li>
-            <li>
-              Añade productos al pedido:
-              <ul className="list-disc pl-6 mt-2">
-                <li>Selecciona un producto de la lista desplegable.</li>
-                <li>Indica la cantidad deseada.</li>
-                <li>Haz clic en "Agregar" para añadir el producto al pedido.</li>
-                <li>Repite este proceso para añadir más productos.</li>
-              </ul>
-            </li>
-            <li>Revisa el resumen del pedido que muestra el total calculado.</li>
-            <li>Haz clic en "Guardar pedido" para registrarlo en el sistema.</li>
-          </ol>
-          <p>
-            El sistema verificará automáticamente la disponibilidad de stock y calculará los totales. Si un producto no
-            tiene suficiente stock, se mostrará un mensaje de error.
-          </p>
-        </div>
-      ),
+      method: "DELETE",
+      path: "/api/clientes/:id",
+      description: "Elimina un cliente",
+      category: "clientes",
+      response: `{
+  "message": "Cliente eliminado correctamente"
+}`,
     },
     {
-      id: "tips",
-      title: "Consejos y Mejores Prácticas",
-      icon: Lightbulb,
-      content: (
-        <div className="space-y-4">
-          <p>Aquí encontrarás algunos consejos para aprovechar al máximo el sistema:</p>
-          <h4 className="text-lg font-medium">Gestión de Clientes</h4>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Mantén actualizada la información de contacto de tus clientes.</li>
-            <li>Utiliza el campo DNI para identificar de manera única a cada cliente.</li>
-            <li>Aprovecha la búsqueda para encontrar rápidamente a un cliente específico.</li>
-          </ul>
-
-          <h4 className="text-lg font-medium">Gestión de Productos</h4>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Utiliza descripciones claras y específicas para facilitar la búsqueda.</li>
-            <li>Mantén actualizado el stock para evitar problemas al crear pedidos.</li>
-            <li>Revisa periódicamente los productos con stock bajo para reabastecerlos.</li>
-            <li>Establece un margen de ganancia adecuado para tu negocio.</li>
-          </ul>
-
-          <h4 className="text-lg font-medium">Gestión de Pedidos</h4>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Verifica siempre la información del cliente antes de crear un pedido.</li>
-            <li>Revisa el resumen del pedido antes de guardarlo para asegurarte de que todo es correcto.</li>
-            <li>Utiliza la fecha correcta para mantener un registro preciso de los pedidos.</li>
-          </ul>
-
-          <Alert className="mt-4">
-            <Lightbulb className="h-4 w-4" />
-            <AlertTitle>Consejo Pro</AlertTitle>
-            <AlertDescription>
-              Utiliza el Dashboard para obtener una visión rápida del estado de tu negocio. Las estadísticas te ayudarán
-              a tomar decisiones informadas sobre tu inventario y ventas.
-            </AlertDescription>
-          </Alert>
-        </div>
-      ),
+      method: "GET",
+      path: "/api/productos",
+      description: "Obtiene todos los productos",
+      category: "productos",
+      response: `[
+  {
+    "id": 1,
+    "nombre": "Producto Ejemplo",
+    "descripcion": "Descripción del producto",
+    "precio": 19.99,
+    "stock": 100
+  },
+  ...
+]`,
     },
+    {
+      method: "GET",
+      path: "/api/productos/:id",
+      description: "Obtiene un producto por ID",
+      category: "productos",
+      response: `{
+  "id": 1,
+  "nombre": "Producto Ejemplo",
+  "descripcion": "Descripción del producto",
+  "precio": 19.99,
+  "stock": 100
+}`,
+    },
+    {
+      method: "POST",
+      path: "/api/productos",
+      description: "Crea un nuevo producto",
+      category: "productos",
+      request: `{
+  "nombre": "Nuevo Producto",
+  "descripcion": "Descripción del nuevo producto",
+  "precio": 29.99,
+  "stock": 50
+}`,
+      response: `{
+  "id": 2,
+  "nombre": "Nuevo Producto",
+  "descripcion": "Descripción del nuevo producto",
+  "precio": 29.99,
+  "stock": 50
+}`,
+    },
+    {
+      method: "PUT",
+      path: "/api/productos/:id",
+      description: "Actualiza un producto existente",
+      category: "productos",
+      request: `{
+  "nombre": "Producto Actualizado",
+  "descripcion": "Descripción actualizada",
+  "precio": 39.99,
+  "stock": 75
+}`,
+      response: `{
+  "id": 1,
+  "nombre": "Producto Actualizado",
+  "descripcion": "Descripción actualizada",
+  "precio": 39.99,
+  "stock": 75
+}`,
+    },
+    {
+      method: "DELETE",
+      path: "/api/productos/:id",
+      description: "Elimina un producto",
+      category: "productos",
+      response: `{
+  "message": "Producto eliminado correctamente"
+}`,
+    },
+    {
+      method: "GET",
+      path: "/api/pedidos",
+      description: "Obtiene todos los pedidos",
+      category: "pedidos",
+      response: `[
+  {
+    "id": 1,
+    "fecha": "2023-01-01T12:00:00Z",
+    "estado": "pendiente",
+    "total": 59.97,
+    "cliente_id": 1,
+    "cliente_nombre": "Cliente Ejemplo"
+  },
+  ...
+]`,
+    },
+    {
+      method: "GET",
+      path: "/api/pedidos/:id",
+      description: "Obtiene un pedido por ID",
+      category: "pedidos",
+      response: `{
+  "id": 1,
+  "fecha": "2023-01-01T12:00:00Z",
+  "estado": "pendiente",
+  "total": 59.97,
+  "cliente_id": 1,
+  "cliente_nombre": "Cliente Ejemplo",
+  "detalles": [
+    {
+      "id": 1,
+      "pedido_id": 1,
+      "producto_id": 1,
+      "producto_nombre": "Producto Ejemplo",
+      "cantidad": 3,
+      "precio_unitario": 19.99
+    }
   ]
+}`,
+    },
+    {
+      method: "POST",
+      path: "/api/pedidos",
+      description: "Crea un nuevo pedido",
+      category: "pedidos",
+      request: `{
+  "cliente_id": 1,
+  "estado": "pendiente",
+  "detalles": [
+    {
+      "producto_id": 1,
+      "cantidad": 3
+    }
+  ]
+}`,
+      response: `{
+  "id": 2,
+  "fecha": "2023-01-02T12:00:00Z",
+  "estado": "pendiente",
+  "total": 59.97,
+  "cliente_id": 1,
+  "cliente_nombre": "Cliente Ejemplo"
+}`,
+    },
+    {
+      method: "PUT",
+      path: "/api/pedidos/:id",
+      description: "Actualiza un pedido existente",
+      category: "pedidos",
+      request: `{
+  "estado": "entregado"
+}`,
+      response: `{
+  "id": 1,
+  "fecha": "2023-01-01T12:00:00Z",
+  "estado": "entregado",
+  "total": 59.97,
+  "cliente_id": 1,
+  "cliente_nombre": "Cliente Ejemplo"
+}`,
+    },
+    {
+      method: "DELETE",
+      path: "/api/pedidos/:id",
+      description: "Elimina un pedido",
+      category: "pedidos",
+      response: `{
+  "message": "Pedido eliminado correctamente"
+}`,
+    },
+    {
+      method: "GET",
+      path: "/api/detalles/:id",
+      description: "Obtiene los detalles de un pedido por ID de pedido",
+      category: "detalles",
+      response: `[
+  {
+    "id": 1,
+    "pedido_id": 1,
+    "producto_id": 1,
+    "producto_nombre": "Producto Ejemplo",
+    "cantidad": 3,
+    "precio_unitario": 19.99
+  },
+  ...
+]`,
+    },
+    {
+      method: "POST",
+      path: "/api/detalle-pedidos",
+      description: "Crea un nuevo detalle de pedido",
+      category: "detalles",
+      request: `{
+  "pedido_id": 1,
+  "producto_id": 2,
+  "cantidad": 1
+}`,
+      response: `{
+  "id": 2,
+  "pedido_id": 1,
+  "producto_id": 2,
+  "producto_nombre": "Nuevo Producto",
+  "cantidad": 1,
+  "precio_unitario": 29.99
+}`,
+    },
+    {
+      method: "POST",
+      path: "/api/auth",
+      description: "Autentica a un usuario",
+      category: "autenticacion",
+      request: `{
+  "username": "admin",
+  "password": "password"
+}`,
+      response: `{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "role": "admin"
+  }
+}`,
+    },
+    {
+      method: "POST",
+      path: "/api/usuarios",
+      description: "Crea un nuevo usuario",
+      category: "usuarios",
+      request: `{
+  "username": "nuevo_usuario",
+  "password": "contraseña",
+  "role": "user"
+}`,
+      response: `{
+  "id": 2,
+  "username": "nuevo_usuario",
+  "role": "user"
+}`,
+    },
+    {
+      method: "POST",
+      path: "/api/document",
+      description: "Genera un documento PDF para un pedido",
+      category: "documentos",
+      request: `{
+  "pedido_id": 1
+}`,
+      response: `{
+  "url": "/documents/pedido_1.pdf"
+}`,
+    },
+  ];
 
-  // Filter sections based on search term
-  const filteredSections = sections.filter(
-    (section) =>
-      section.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      section.content.props.children.some(
-        (child: { props: { children: string } }) =>
-          typeof child === "object" &&
-          child.props &&
-          child.props.children &&
-          (typeof child.props.children === "string"
-            ? child.props.children.toLowerCase().includes(searchTerm.toLowerCase())
-            : JSON.stringify(child.props.children).toLowerCase().includes(searchTerm.toLowerCase())),
-      ),
-  )
+  const filteredEndpoints = endpoints.filter(
+    (endpoint) =>
+      endpoint.path.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      endpoint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      endpoint.method.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      endpoint.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getMethodColor = (method: string) => {
+    switch (method) {
+      case "GET":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "POST":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "PUT":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "DELETE":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "clientes":
+        return <Users className="h-5 w-5" />;
+      case "productos":
+        return <Package className="h-5 w-5" />;
+      case "pedidos":
+        return <ShoppingCart className="h-5 w-5" />;
+      case "detalles":
+        return <FileText className="h-5 w-5" />;
+      case "autenticacion":
+        return <Settings className="h-5 w-5" />;
+      case "usuarios":
+        return <Users className="h-5 w-5" />;
+      case "documentos":
+        return <FileText className="h-5 w-5" />;
+      default:
+        return <Code className="h-5 w-5" />;
+    }
+  };
+
+  const copyToClipboard = (text: string, endpoint: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedEndpoint(endpoint);
+    setTimeout(() => setCopiedEndpoint(null), 2000);
+    toast({
+      title: "Copiado al portapapeles",
+      description: "El endpoint ha sido copiado correctamente",
+    });
+  };
+
+  const categories = [
+    { id: "all", name: "Todos", icon: <Database className="h-4 w-4" /> },
+    { id: "clientes", name: "Clientes", icon: <Users className="h-4 w-4" /> },
+    { id: "productos", name: "Productos", icon: <Package className="h-4 w-4" /> },
+    { id: "pedidos", name: "Pedidos", icon: <ShoppingCart className="h-4 w-4" /> },
+    { id: "detalles", name: "Detalles", icon: <FileText className="h-4 w-4" /> },
+    { id: "autenticacion", name: "Autenticación", icon: <Settings className="h-4 w-4" /> },
+    { id: "usuarios", name: "Usuarios", icon: <Users className="h-4 w-4" /> },
+    { id: "documentos", name: "Documentos", icon: <FileText className="h-4 w-4" /> },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Documentación</h1>
-        <p className="text-slate-500 mt-2">Guía completa del Sistema de Administración.</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2 text-gray-900">
+          <FileText className="h-8 w-8" />
+          Documentación API
+        </h1>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <Card className="border-0 shadow-sm md:w-64 lg:w-80">
-          <CardHeader>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+      <Card className="overflow-hidden border border-gray-200 shadow-md">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <CardTitle className="text-slate-800">Referencia de API</CardTitle>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
                 type="search"
-                placeholder="Buscar en la documentación..."
-                className="pl-9"
+                placeholder="Buscar endpoints..."
+                className="pl-8 bg-white border-gray-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <nav className="space-y-1 px-4 pb-4">
-              {filteredSections.map((section) => (
-                <Button
-                  key={section.id}
-                  variant="ghost"
-                  className="w-full justify-start text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-                  onClick={() => {
-                    const element = document.getElementById(section.id)
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth" })
-                    }
-                  }}
-                >
-                  <section.icon className="mr-2 h-4 w-4" />
-                  {section.title}
-                </Button>
-              ))}
-            </nav>
-          </CardContent>
-        </Card>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Tabs defaultValue="all" className="w-full">
+            <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 overflow-x-auto">
+              <TabsList className="bg-transparent p-0 h-auto flex space-x-2">
+                {categories.map((category) => (
+                  <TabsTrigger
+                    key={category.id}
+                    value={category.id}
+                    className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 transition-all"
+                  >
+                    {category.icon}
+                    {category.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
-        <div className="flex-1">
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="flex flex-row items-center border-b pb-4">
-              <BookOpen className="h-5 w-5 mr-2 text-primary" />
-              <CardTitle>Manual del Usuario</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              {filteredSections.length > 0 ? (
-                <div className="space-y-8">
-                  {filteredSections.map((section) => (
-                    <div key={section.id} id={section.id} className="scroll-mt-16">
-                      <div className="flex items-center mb-4">
-                        <section.icon className="h-5 w-5 mr-2 text-primary" />
-                        <h2 className="text-2xl font-bold">{section.title}</h2>
-                      </div>
-                      <div className="pl-7">{section.content}</div>
-                      {section !== filteredSections[filteredSections.length - 1] && <Separator className="mt-8" />}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-                  <FileText className="h-12 w-12 mb-4 text-slate-300" />
-                  <p className="text-lg font-medium">No se encontraron resultados</p>
-                  <p className="text-slate-400 mt-1">Intenta con otra búsqueda</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
-}
+            {categories.map((category) => (
+              <TabsContent
+                key={category.id}
+                value={category.id}
+                className="p-0 mt-0 focus-visible:outline-none focus-visible:ring-0"
+              >
+                <div className="divide-y divide-gray-200">
+                  {filteredEndpoints
+                    .filter(
+                      (endpoint) =>
+                        category.id === "all" || endpoint.category === category.id
+                    )
+                    .map((endpoint, index) => (
+                      <Accordion
+                        key={`${endpoint.method}-${endpoint.path}-${index}`}
+                        type="single"
+                        collapsible
+                        className="w-full"
+                      >
+                        <AccordionItem value={`item-${index}`}\

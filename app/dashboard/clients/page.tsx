@@ -2,340 +2,314 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import {
+  Users,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowUpDown,
+  Eye,
+  Grid,
+  Smartphone,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Plus, Search, FileDown, RefreshCw, User2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
-import { getClientes, type Cliente } from "@/lib/data"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "@/components/ui/use-toast"
+
+interface Client {
+  id: number
+  nombre: string
+  email: string
+  telefono: string
+  direccion: string
+  tipo: string
+}
 
 export default function ClientsPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [clients, setClients] = useState<Cliente[]>([])
-  const [loading, setLoading] = useState(true)
+  const [clients, setClients] = useState<Client[]>([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 8
+  const [isLoading, setIsLoading] = useState(true)
+  const [sortField, setSortField] = useState<keyof Client | null>(null)
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const router = useRouter()
 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const data = await getClientes()
+        const response = await fetch("/api/clientes")
+        if (!response.ok) {
+          throw new Error("Error al cargar clientes")
+        }
+        const data = await response.json()
         setClients(data)
-        setLoading(false)
       } catch (error) {
-        console.error("Error fetching clients:", error)
+        console.error("Error:", error)
         toast({
           title: "Error",
           description: "No se pudieron cargar los clientes",
           variant: "destructive",
         })
-        setLoading(false)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchClients()
-  }, [toast])
+  }, [])
 
-  // Función para refrescar los datos
-  const refreshData = async () => {
-    setLoading(true)
+  const handleDelete = async (id: number) => {
     try {
-      const data = await getClientes()
-      setClients(data)
+      const response = await fetch(`/api/clientes/${id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el cliente")
+      }
+
+      setClients(clients.filter((client) => client.id !== id))
       toast({
-        title: "Datos actualizados",
-        description: "La lista de clientes ha sido actualizada",
+        title: "Éxito",
+        description: "Cliente eliminado correctamente",
       })
     } catch (error) {
-      console.error("Error refreshing clients:", error)
+      console.error("Error:", error)
       toast({
         title: "Error",
-        description: "No se pudieron actualizar los clientes",
+        description: "No se pudo eliminar el cliente",
         variant: "destructive",
       })
-    } finally {
-      setLoading(false)
     }
   }
 
-  // Filter clients based on search term
-  const filteredClients = clients.filter(
+  const handleSort = (field: keyof Client) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+    } else {
+      setSortField(field)
+      setSortDirection("asc")
+    }
+  }
+
+  const sortedClients = [...clients].sort((a, b) => {
+    if (!sortField) return 0
+
+    const aValue = a[sortField]
+    const bValue = b[sortField]
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+    }
+
+    return 0
+  })
+
+  const filteredClients = sortedClients.filter(
     (client) =>
-      client.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.dni.includes(searchTerm),
+      client.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.telefono.includes(searchTerm),
   )
 
-  // Pagination
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage)
-  const paginatedClients = filteredClients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const getClientTypeColor = (tipo: string) => {
+    switch (tipo.toLowerCase()) {
+      case "empresa":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "individual":
+        return "bg-purple-100 text-purple-800 border-purple-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
-        <p className="text-slate-500 mt-2">Gestiona la información de tus clientes.</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2 text-gray-900">
+          <Users className="h-8 w-8" />
+          Clientes
+        </h1>
+        <Button
+          onClick={() => router.push("/dashboard/clients/new")}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
+        >
+          <Plus className="mr-2 h-4 w-4" /> Añadir Cliente
+        </Button>
       </div>
 
-      <Tabs defaultValue="list" className="w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
-          <TabsList className="bg-slate-100">
-            <TabsTrigger value="list" className="data-[state=active]:bg-white">
-              Lista
-            </TabsTrigger>
-            <TabsTrigger value="grid" className="data-[state=active]:bg-white">
-              Tarjetas
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+      <Card className="overflow-hidden border border-gray-200 shadow-md">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <CardTitle className="text-indigo-800">Lista de Clientes</CardTitle>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
                 type="search"
-                placeholder="Buscar cliente..."
-                className="pl-9 w-full sm:w-[250px]"
+                placeholder="Buscar clientes..."
+                className="pl-8 bg-white border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page on search
-                }}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button onClick={() => router.push("/dashboard/clients/new")} className="bg-primary">
-              <Plus className="mr-2 h-4 w-4" /> Nuevo Cliente
-            </Button>
           </div>
-        </div>
-
-        <TabsContent value="list" className="mt-0">
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-0">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Todos los clientes</CardTitle>
-                  <CardDescription>
-                    {filteredClients.length} cliente{filteredClients.length !== 1 ? "s" : ""} en total
-                  </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  
-                  <Button variant="outline" size="sm" className="h-8" onClick={refreshData} disabled={loading}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-                    Actualizar
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              {loading ? (
-                <div className="space-y-4">
-                  {Array(5)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i} className="flex items-center space-x-4">
-                        <Skeleton className="h-12 w-12 rounded-full" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-[250px]" />
-                          <Skeleton className="h-4 w-[200px]" />
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                <>
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-slate-50">
-                          <TableHead className="font-medium">ID</TableHead>
-                          <TableHead className="font-medium">Apellidos</TableHead>
-                          <TableHead className="font-medium">Nombres</TableHead>
-                          <TableHead className="font-medium hidden md:table-cell">Dirección</TableHead>
-                          <TableHead className="font-medium">DNI</TableHead>
-                          <TableHead className="font-medium hidden md:table-cell">Teléfono</TableHead>
-                          <TableHead className="font-medium hidden md:table-cell">Móvil</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {paginatedClients.length > 0 ? (
-                          paginatedClients.map((client) => (
-                            <TableRow key={client.idCliente} className="hover:bg-slate-50">
-                              <TableCell className="font-medium">{client.idCliente}</TableCell>
-                              <TableCell>{client.apellidos}</TableCell>
-                              <TableCell>{client.nombres}</TableCell>
-                              <TableCell className="hidden md:table-cell">{client.direccion}</TableCell>
-                              <TableCell>
-                                <Badge variant="outline">{client.dni}</Badge>
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell">{client.telefono}</TableCell>
-                              <TableCell className="hidden md:table-cell">{client.movil}</TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={7} className="text-center h-24">
-                              <div className="flex flex-col items-center justify-center text-slate-500">
-                                <User2 className="h-8 w-8 mb-2 text-slate-300" />
-                                <p>No se encontraron clientes</p>
-                                <p className="text-sm text-slate-400">
-                                  Intenta con otra búsqueda o añade un nuevo cliente
-                                </p>
-                              </div>
-                            </TableCell>
-                          </TableRow>
+        </CardHeader>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-700"></div>
+            </div>
+          ) : filteredClients.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center p-4">
+              <Users className="h-12 w-12 text-indigo-300 mb-2" />
+              <h3 className="text-lg font-medium text-gray-900">No hay clientes</h3>
+              <p className="text-gray-500 mt-1">No se encontraron clientes que coincidan con tu búsqueda.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="w-[80px]">ID</TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort("nombre")}>
+                      <div className="flex items-center">
+                        Nombre
+                        {sortField === "nombre" && (
+                          <ArrowUpDown
+                            className={`ml-2 h-4 w-4 ${sortDirection === "asc" ? "transform rotate-180" : ""}`}
+                          />
                         )}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-4">
-                      <p className="text-sm text-slate-500">
-                        Mostrando <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> a{" "}
-                        <span className="font-medium">
-                          {Math.min(currentPage * itemsPerPage, filteredClients.length)}
-                        </span>{" "}
-                        de <span className="font-medium">{filteredClients.length}</span> resultados
-                      </p>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                          disabled={currentPage === 1}
-                        >
-                          Anterior
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                          disabled={currentPage === totalPages}
-                        >
-                          Siguiente
-                        </Button>
                       </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="grid" className="mt-0">
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-0">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Vista de tarjetas</CardTitle>
-                  <CardDescription>
-                    {filteredClients.length} cliente{filteredClients.length !== 1 ? "s" : ""} en total
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {Array(8)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i} className="border rounded-lg p-4">
-                        <div className="flex flex-col items-center space-y-3">
-                          <Skeleton className="h-16 w-16 rounded-full" />
-                          <Skeleton className="h-4 w-[150px]" />
-                          <Skeleton className="h-4 w-[100px]" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort("email")}>
+                      <div className="flex items-center">
+                        Email
+                        {sortField === "email" && (
+                          <ArrowUpDown
+                            className={`ml-2 h-4 w-4 ${sortDirection === "asc" ? "transform rotate-180" : ""}`}
+                          />
+                        )}
+                      </div>
+                    </TableHead>
+                    <TableHead>Teléfono</TableHead>
+                    <TableHead>Dirección</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredClients.map((client) => (
+                    <TableRow key={client.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <TableCell className="font-medium">{client.id}</TableCell>
+                      <TableCell className="font-medium">{client.nombre}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Mail className="h-4 w-4 text-indigo-600 mr-1" />
+                          <span className="text-gray-700">{client.email}</span>
                         </div>
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                <>
-                  {paginatedClients.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {paginatedClients.map((client) => (
-                        <div
-                          key={client.idCliente}
-                          className="border rounded-lg p-4 hover:border-primary hover:shadow-sm transition-all"
-                        >
-                          <div className="flex flex-col items-center text-center">
-                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                              <User2 className="h-8 w-8 text-primary" />
-                            </div>
-                            <h3 className="font-medium">{`${client.apellidos}, ${client.nombres}`}</h3>
-                            <p className="text-sm text-slate-500 mt-1">{client.dni}</p>
-                            <div className="mt-3 pt-3 border-t w-full">
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div>
-                                  <p className="text-slate-500">Teléfono</p>
-                                  <p className="font-medium">{client.telefono || "N/A"}</p>
-                                </div>
-                                <div>
-                                  <p className="text-slate-500">Móvil</p>
-                                  <p className="font-medium">{client.movil || "N/A"}</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Phone className="h-4 w-4 text-indigo-600 mr-1" />
+                          <span className="text-gray-700">{client.telefono}</span>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-                      <User2 className="h-12 w-12 mb-4 text-slate-300" />
-                      <p className="text-lg font-medium">No se encontraron clientes</p>
-                      <p className="text-slate-400 mt-1">Intenta con otra búsqueda o añade un nuevo cliente</p>
-                      <Button onClick={() => router.push("/dashboard/clients/new")} className="mt-4">
-                        <Plus className="mr-2 h-4 w-4" /> Nuevo Cliente
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-6">
-                      <p className="text-sm text-slate-500">
-                        Mostrando <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> a{" "}
-                        <span className="font-medium">
-                          {Math.min(currentPage * itemsPerPage, filteredClients.length)}
-                        </span>{" "}
-                        de <span className="font-medium">{filteredClients.length}</span> resultados
-                      </p>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                          disabled={currentPage === 1}
-                        >
-                          Anterior
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                          disabled={currentPage === totalPages}
-                        >
-                          Siguiente
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                      </TableCell>
+                      <TableCell className="max-w-[150px] truncate">
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 text-indigo-600 mr-1 flex-shrink-0" />
+                          <span className="text-gray-700 truncate" title={client.direccion}>
+                            {client.direccion}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`${getClientTypeColor(client.tipo)} font-medium`}>
+                          {client.tipo === "empresa" ? (
+                            <Grid className="h-3 w-3 mr-1" />
+                          ) : (
+                            <Smartphone className="h-3 w-3 mr-1" />
+                          )}
+                          {client.tipo}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/dashboard/clients/${client.id}`)}
+                            className="border-gray-300 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                          >
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">Ver</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/dashboard/clients/edit/${client.id}`)}
+                            className="border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Editar</span>
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Eliminar</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="border-red-100">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-red-600">¿Eliminar cliente?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar este cliente?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="border-gray-300 hover:bg-gray-100">
+                                  Cancelar
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(client.id)}
+                                  className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
+                                >
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

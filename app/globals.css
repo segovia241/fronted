@@ -5,47 +5,76 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 164 40% 22%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 164 40% 22%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 164 40% 22%;
+
+    /* New color palette */
+    --primary: 152 47% 55%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --secondary: 316 36% 80%;
+    --secondary-foreground: 164 40% 22%;
+    --accent: 96 45% 60%;
+    --accent-foreground: 164 40% 22%;
+    --muted: 152 30% 96%;
+    --muted-foreground: 164 25% 40%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --border: 152 30% 90%;
+    --input: 152 30% 90%;
+    --ring: 152 47% 55%;
+    --radius: 0.75rem;
+
+    /* Chart colors */
+    --chart-1: 152 47% 55%;
+    --chart-2: 316 36% 80%;
+    --chart-3: 96 45% 60%;
+    --chart-4: 164 40% 46%;
+    --chart-5: 164 40% 22%;
+
+    /* Sidebar colors */
+    --sidebar-background: 164 40% 22%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 164 40% 22%;
+    --sidebar-accent: 164 30% 30%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 164 30% 30%;
+    --sidebar-ring: 210 40% 98%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 164 40% 10%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 164 40% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 164 40% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --primary: 152 47% 55%;
+    --primary-foreground: 164 40% 22%;
+    --secondary: 316 36% 80%;
+    --secondary-foreground: 164 40% 22%;
+    --accent: 96 45% 60%;
+    --accent-foreground: 164 40% 22%;
+    --muted: 164 30% 20%;
+    --muted-foreground: 164 20% 70%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 164 30% 20%;
+    --input: 164 30% 20%;
+    --ring: 152 47% 55%;
+
+    /* Sidebar colors */
+    --sidebar-background: 164 40% 22%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 164 40% 22%;
+    --sidebar-accent: 164 30% 30%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 164 30% 30%;
+    --sidebar-ring: 210 40% 98%;
   }
 }
 
@@ -71,4 +100,233 @@
 
 .animate-appear {
   animation: appear 0.3s ease-out forwards;
+}
+
+/* Card hover effects */
+.card-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .card-hover-effect:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, hsl(152, 47%, 55%) 0%, hsl(96, 45%, 60%) 100%);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, hsl(316, 36%, 80%) 0%, hsl(316, 36%, 70%) 100%);
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(350, 89%, 60%) 100%);
+}
+
+/* Animated background */
+.animated-bg {
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Glass effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Timer animation */
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 283; /* 2πr where r = 45 */
+  }
+}
+
+.countdown-animation {
+  animation: countdown 60s linear forwards;
+}
+
+/* Progress bar */
+.progress-ring {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Sidebar width */
+.sidebar-expanded {
+  width: 280px;
+}
+
+.sidebar-collapsed {
+  width: 70px;
+}
+
+/* Feature card */
+.feature-card {
+  @apply relative overflow-hidden rounded-xl p-6 border border-white/20;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: all 0.5s ease;
+}
+
+.feature-card:hover::before {
+  transform: translateX(100%);
+}
+
+.feature-card .icon-wrapper {
+  @apply flex items-center justify-center w-14 h-14 rounded-full mb-4;
+  background: linear-gradient(135deg, rgba(224, 186, 215, 0.8), rgba(97, 208, 149, 0.8));
+}
+
+/* Animated button */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-animated::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.btn-animated:hover::after {
+  left: 100%;
+}
+
+/* Colorful backgrounds */
+.bg-pattern-1 {
+  background-color: #e0bad7;
+  background-image: radial-gradient(circle at 1px 1px, rgba(97, 208, 149, 0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.bg-pattern-2 {
+  background-color: rgba(72, 191, 132, 0.1);
+  background-image: linear-gradient(
+      45deg,
+      rgba(224, 186, 215, 0.1) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(224, 186, 215, 0.1) 75%
+    ),
+    linear-gradient(45deg, rgba(224, 186, 215, 0.1) 25%, transparent 25%, transparent 75%, rgba(224, 186, 215, 0.1) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+.bg-pattern-3 {
+  background-color: rgba(67, 151, 117, 0.05);
+  background-image: linear-gradient(rgba(224, 186, 215, 0.1) 1px, transparent 1px),
+    linear-gradient(to right, rgba(224, 186, 215, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Welcome screen styles */
+.welcome-container {
+  @apply flex flex-col items-center justify-center p-8 rounded-2xl text-center;
+  background: linear-gradient(135deg, rgba(224, 186, 215, 0.2), rgba(97, 208, 149, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.welcome-icon-container {
+  @apply flex items-center justify-center w-24 h-24 rounded-full mb-6;
+  background: linear-gradient(135deg, #e0bad7, #61d095);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-button {
+  @apply px-6 py-3 rounded-full font-medium text-white transition-all;
+  background: linear-gradient(135deg, #61d095, #48bf84);
+  box-shadow: 0 4px 15px rgba(97, 208, 149, 0.3);
+}
+
+.welcome-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(97, 208, 149, 0.4);
+}
+
+.welcome-button-secondary {
+  @apply px-6 py-3 rounded-full font-medium transition-all;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
