@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ArrowLeft, Package, ShoppingCart, FileText, RefreshCw } from "lucide-react"
+import { ArrowLeft, Package, ShoppingCart, FileText, RefreshCw } from 'lucide-react'
 import { type DetallePedido, getDetallesPedido } from "@/lib/data"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +16,7 @@ export default function DetallesPedidoPage({ params }: { params: Promise<{ id: s
   const router = useRouter()
   const unwrappedParams = use(params)
   const idPedido = unwrappedParams.id
-
+  
   const [detalles, setDetalles] = useState<DetallePedido[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
