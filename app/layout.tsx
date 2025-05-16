@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type React from "react"
+import type { Metadata } from "next"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: 'Sistema Administrativo',
-  description: 'Segovia',
-  generator: 'seg.dev',
+  title: "Sistema Administrativo",
+  description: "Segovia",
+  generator: "seg.dev",
 }
 
 export default function RootLayout({

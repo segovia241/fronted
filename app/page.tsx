@@ -19,7 +19,6 @@ export default function LoginPage() {
       router.push("/dashboard")
     }
   }, [])
-  
 
   const router = useRouter()
   const { toast } = useToast()
@@ -78,17 +77,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-secondary/30 to-primary/20 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary mb-4">
             <Building2 className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-800">Sistema de Administración</h1>
-          <p className="text-slate-600 mt-2">Acceda a su cuenta para continuar</p>
+          <h1 className="text-3xl font-bold text-foreground">Sistema de Administración</h1>
+          <p className="text-muted-foreground mt-2">Acceda a su cuenta para continuar</p>
         </div>
 
-        <Card className="w-full shadow-lg border-0">
+        <Card className="w-full shadow-lg border-0 glass-effect">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Iniciar Sesión</CardTitle>
             <CardDescription className="text-center">Ingrese sus credenciales para acceder al sistema</CardDescription>
@@ -96,7 +95,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md animate-appear">
+                <div className="bg-destructive/10 border-l-4 border-destructive text-destructive p-4 rounded-md animate-appear">
                   <p>{error}</p>
                 </div>
               )}
@@ -105,14 +104,14 @@ export default function LoginPage() {
                   Usuario
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="idUsuario"
                     name="idUsuario"
                     placeholder="Ingrese su usuario"
                     value={formData.idUsuario}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-10 bg-background/50 border-border/50"
                   />
                 </div>
               </div>
@@ -121,7 +120,7 @@ export default function LoginPage() {
                   Contraseña
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="passwd"
                     name="passwd"
@@ -129,20 +128,20 @@ export default function LoginPage() {
                     placeholder="Ingrese su contraseña"
                     value={formData.passwd}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-10 bg-background/50 border-border/50"
                   />
                 </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
                 {loading ? "Iniciando sesión..." : "Iniciar sesión"}
               </Button>
             </CardFooter>
           </form>
         </Card>
 
-        <p className="text-center text-sm text-slate-500 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           © {new Date().getFullYear()} Sistema de Administración. Todos los derechos reservados.
         </p>
       </div>

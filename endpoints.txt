@@ -1,0 +1,134 @@
+# Endpoints de la API
+
+## Clientes
+
+- GET /api/clientes - Obtener todos los clientes
+- GET /api/clientes/[id] - Obtener un cliente específico por ID
+- POST /api/clientes - Crear un nuevo cliente
+- PUT /api/clientes/[id] - Actualizar un cliente existente
+- DELETE /api/clientes/[id] - Eliminar un cliente
+
+## Productos
+
+- GET /api/productos - Obtener todos los productos
+- GET /api/productos/[id] - Obtener un producto específico por ID
+- POST /api/productos - Crear un nuevo producto
+- PUT /api/productos/[id] - Actualizar un producto existente
+- DELETE /api/productos/[id] - Eliminar un producto
+
+## Pedidos
+
+- GET /api/pedidos - Obtener todos los pedidos
+- GET /api/pedidos/[id] - Obtener un pedido específico por ID
+- POST /api/pedidos - Crear un nuevo pedido
+- PUT /api/pedidos/[id] - Actualizar un pedido existente
+- DELETE /api/pedidos/[id] - Eliminar un pedido
+
+## Detalles de Pedido
+
+- GET /api/detalles/[id] - Obtener los detalles de un pedido específico
+- POST /api/detalle-pedidos - Crear detalles de pedido
+- PUT /api/detalles/[id] - Actualizar detalles de un pedido existente
+
+## Autenticación
+
+- POST /api/auth - Autenticar usuario
+
+## Documentos
+
+- GET /api/document - Obtener documentos
+
+## Usuarios
+
+- GET /api/usuarios - Obtener todos los usuarios
+- POST /api/usuarios - Crear un nuevo usuario
+
+# Uso de los Endpoints
+
+## Clientes
+
+### Obtener todos los clientes
+GET /api/clientes
+Respuesta: Array de objetos Cliente
+
+### Obtener un cliente específico
+GET /api/clientes/[id]
+Respuesta: Objeto Cliente
+
+### Crear un nuevo cliente
+POST /api/clientes
+Cuerpo: { apellidos, nombres, direccion, dni, telefono, movil }
+Respuesta: Objeto Cliente creado
+
+### Actualizar un cliente existente
+PUT /api/clientes/[id]
+Cuerpo: { apellidos, nombres, direccion, dni, telefono, movil }
+Respuesta: Objeto Cliente actualizado
+
+### Eliminar un cliente
+DELETE /api/clientes/[id]
+Respuesta: { success: true }
+
+## Productos
+
+### Obtener todos los productos
+GET /api/productos
+Respuesta: Array de objetos Producto
+
+### Obtener un producto específico
+GET /api/productos/[id]
+Respuesta: Objeto Producto
+
+### Crear un nuevo producto
+POST /api/productos
+Cuerpo: { descripcion, costo, precio, cantidad }
+Respuesta: Objeto Producto creado
+
+### Actualizar un producto existente
+PUT /api/productos/[id]
+Cuerpo: { descripcion, costo, precio, cantidad }
+Respuesta: Objeto Producto actualizado
+
+### Eliminar un producto
+DELETE /api/productos/[id]
+Respuesta: { success: true }
+
+## Pedidos
+
+### Obtener todos los pedidos
+GET /api/pedidos
+Respuesta: Array de objetos Pedido
+
+### Obtener un pedido específico
+GET /api/pedidos/[id]
+Respuesta: Objeto Pedido
+
+### Crear un nuevo pedido
+POST /api/pedidos
+Cuerpo: { cliente: { idCliente }, fecha, subTotal, totalVenta }
+Respuesta: { success: true, pedido: Objeto Pedido creado }
+
+### Actualizar un pedido existente
+PUT /api/pedidos/[id]
+Cuerpo: { cliente: { idCliente }, fecha, subTotal, totalVenta }
+Respuesta: { success: true, message: "Pedido actualizado correctamente" }
+
+### Eliminar un pedido
+DELETE /api/pedidos/[id]
+Respuesta: { success: true }
+
+## Detalles de Pedido
+
+### Obtener los detalles de un pedido específico
+GET /api/detalles/[id]
+Respuesta: Array de objetos DetallePedido
+
+### Crear detalles de pedido
+POST /api/detalle-pedidos
+Cuerpo: { idPedido, idProd, cantidad, precio, totalDeta }
+Respuesta: Objeto DetallePedido creado
+
+### Actualizar detalles de un pedido existente
+PUT /api/detalles/[id]
+Cuerpo: Array de objetos { idProd, cantidad, precio, totalDeta }
+Respuesta: { success: true, message: "Detalles actualizados correctamente" }
